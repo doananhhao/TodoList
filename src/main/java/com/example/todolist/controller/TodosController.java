@@ -18,17 +18,11 @@ public class TodosController {
     private TodoService todoService;
 
     @ResponseBody
-    @RequestMapping(value = "/{status}", method = RequestMethod.GET, produces = "application/json")
-    public Map getTodos(@PathVariable(required = false) String status) {
+    @RequestMapping(method = RequestMethod.GET, produces = "application/json")
+    public Map getTodos(@RequestParam(name = "status", required = false) String status) {
         Map<String, List> responseData = new HashMap<>();
-        if (status.equalsIgnoreCase("active")) {
-            responseData.put("data", this.todoService.getActiveTodos());
-            return responseData;
-        } else if (status.equalsIgnoreCase("completed")) {
-            responseData.put("data", this.todoService.getCompletedTodos());
-            return responseData;
-        }
         responseData.put("data", this.todoService.getTodos());
+        System.out.println(status);
         return responseData;
     }
 

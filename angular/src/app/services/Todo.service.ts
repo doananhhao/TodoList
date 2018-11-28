@@ -14,7 +14,7 @@ export class TodoService {
   }
 
   getTodos(): Observable<TodoModel[]> {
-    return this.http.get<TodoModel[]>(`${this.url}/all`);
+    return this.http.get<TodoModel[]>(`${this.url}`);
   }
 
   add(title): Observable<TodoModel> {

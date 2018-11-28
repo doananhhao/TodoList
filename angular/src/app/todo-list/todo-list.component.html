@@ -1,0 +1,5 @@
+<section class="main" *ngIf="todos">
+    <ul class="todo-list">
+        <app-todo-item *ngFor="let todo of todos" [todo]="todo" (itemRemoved)="remove($event)" (itemModified)="update($event)"></app-todo-item>
+    </ul>
+</section>

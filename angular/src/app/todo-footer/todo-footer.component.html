@@ -1,0 +1,14 @@
+<footer class="footer">
+  <span class="todo-count"><strong>{{ remainingCount }}</strong> {{ remainingCount == 1 ? 'item' : 'items' }} left</span>
+  <ul class="filters">
+      <li>
+          <a (click)="setCurrentStatus(anyStatus)" routerLinkActive="active" [class.selected]="currentStatus === anyStatus">{{ anyStatus | titlecase }}</a>
+      </li>
+      <li>
+          <a (click)="setCurrentStatus(activeStatus)" routerLinkActive="active" [class.selected]="currentStatus === activeStatus">{{ activeStatus | titlecase }}</a>
+      </li>
+      <li>
+          <a (click)="setCurrentStatus(completedStatus)" routerLinkActive="active" [class.selected]="currentStatus === completedStatus">{{ completedStatus | titlecase }}</a>
+      </li>
+  </ul>
+</footer>

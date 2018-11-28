@@ -1,0 +1,5 @@
+<section class="todoapp">
+    <app-todo-header (addTodo)="add($event)"></app-todo-header>
+    <app-todo-list [todos]="currTodos" (removeTodo)="remove($event)" (updateTodo)="update($event)"></app-todo-list>
+    <app-todo-footer [remainingCount]="remainingCount" (changeFilter)="changeFilter($event)"></app-todo-footer>
+</section>

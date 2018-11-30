@@ -1,4 +1,5 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
+import { TodoModel } from 'src/models/TodoModel';
 
 @Component({
 	selector: 'app-todo-item',
@@ -7,18 +8,20 @@ import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 })
 export class TodoItemComponent implements OnInit {
 
-	@Input() todo;
+	@Input() todo: TodoModel;
+	@Input() enableDrag: boolean;
 
 	@Output() itemModified = new EventEmitter();
 	@Output() itemRemoved = new EventEmitter();
-	
-	editing = false;
+	@Output() itemReorder = new EventEmitter();
+
+	editing: boolean = false;
 
 	constructor() { }
 
 	ngOnInit() {
 	}
-	
+
 	cancelEditing() {
 		this.editing = false;
 	}
@@ -49,6 +52,25 @@ export class TodoItemComponent implements OnInit {
 
 	update() {
 		this.itemModified.next(this.todo);
+	}
+
+	onDrop(event) {
+		event.preventDefault();
+		let data = {
+			todoId: event.dataTransfer.getData("text/plain"),
+			newOrder: this.todo.order
+		};
+		this.itemReorder.next(data);
+	}
+
+	onDragStart(event) {
+		event.dataTransfer.setData("text/plain", this.todo.id);
+		event.dropEffect = "move";
+	}
+
+	onDragOver(event) {
+		event.preventDefault();
+		event.dataTransfer.dropEffect = "move";
 	}
 
 }

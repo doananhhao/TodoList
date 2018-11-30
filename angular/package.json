@@ -22,7 +22,6 @@
     "@angular/router": "^6.1.0",
     "@types/node-uuid": "0.0.28",
     "core-js": "^2.5.4",
-    "node-uuid": "^1.4.8",
     "rxjs": "~6.2.0",
     "zone.js": "~0.8.26"
   },

@@ -9,9 +9,11 @@ import { TodoModel } from 'src/models/TodoModel';
 export class TodoListComponent implements OnInit {
 
   @Input() todos: TodoModel[];
-  
+  @Input() enableDrag: boolean;
+
   @Output() removeTodo = new EventEmitter();
   @Output() updateTodo = new EventEmitter();
+  @Output() itemReorder = new EventEmitter();
 
   constructor() {
   }
@@ -26,5 +28,8 @@ export class TodoListComponent implements OnInit {
   update(todo: TodoModel) {
     this.updateTodo.next(todo);
   }
-  
+
+  reorder(data) {
+    this.itemReorder.next(data);
+  }
 }

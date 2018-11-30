@@ -3,6 +3,9 @@ import { TodoService } from './services/Todo.service';
 import { TodoModel } from 'src/models/TodoModel';
 import { StateTodo } from 'src/constant/StateTodo';
 
+const SUCCESS = "success";
+const RESULT = "result";
+
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
@@ -12,58 +15,59 @@ export class AppComponent {
 
   title = 'todo-list';
   remainingCount: number;
-
   todos: TodoModel[];
-  remainingTodos: TodoModel[];
-  completedTodos: TodoModel[];
-  currTodos: TodoModel[];
-
   currentStatus: string;
+
+  enableDrag: boolean;
 
   constructor(private todoService: TodoService) {
   }
 
   ngOnInit(): void {
     this.currentStatus = StateTodo.ALL;
-    this.getTodos();
+    this.enableDrag = true;
+    this.initTodos();
+    this.updateRemainingCount();
   }
 
-  getTodos() {
+  initTodos() {
     this.todoService.getTodos().subscribe((response: any) => {
       this.todos = response["data"];
-      this.getRemaining();
-      this.getCompleted();
-      this.calculateRemainingCount();
-      this.currTodos = this.todos;
+      this.todos = this.getCurrentTodos(this.currentStatus);
     })
   }
 
-  getRemaining() {
-    this.remainingTodos = this.get(false);
-  }
-
-  getCompleted() {
-    this.completedTodos = this.get(true);
+  getCurrentTodos(status: string): TodoModel[] {
+    this.currentStatus = status;
+    this.enableDrag = false;
+    if (status === StateTodo.ACTIVE) {
+      return this.getRemaining();
+    } else if (status === StateTodo.COMPLETED) {
+      return this.getCompleted();
+    }
+    this.enableDrag = true;
+    return this.todos;
   }
 
   changeFilter(status: string) {
     this.currentStatus = status;
-    if (status === StateTodo.ACTIVE) {
-      this.setCurrentTodos(this.remainingTodos);
-    } else if (status === StateTodo.COMPLETED) {
-      this.setCurrentTodos(this.completedTodos);
-    } else {
-      this.setCurrentTodos(this.todos);
-    }
+  }
+
+  getRemaining() {
+    return this.get(false);
+  }
+
+  getCompleted() {
+    return this.get(true);
   }
 
   add(title: String) {
-    this.todoService.add(title).subscribe((todo: TodoModel) => {
-      if (todo !== null) {
-        this.todos.push(todo);
-        this.remainingTodos.push(todo);
-        this.calculateRemainingCount();
-        this.changeFilter(this.currentStatus);
+    this.todoService.add(title).subscribe((response: any) => {
+      if (response[SUCCESS]) {
+        this.todos.push(response[RESULT]);
+        this.updateRemainingCount();
+      } else {
+        alert(response[RESULT]);
       }
     })
   }
@@ -72,10 +76,7 @@ export class AppComponent {
     this.todoService.remove(todo.id).subscribe((isDeleted: Boolean) => {
       if (isDeleted) {
         this.todos.splice(this.todos.indexOf(todo), 1);
-        this.getRemaining();
-        this.getCompleted();
-        this.calculateRemainingCount();
-        this.changeFilter(this.currentStatus);
+        this.updateRemainingCount();
       }
     });
   }
@@ -88,20 +89,24 @@ export class AppComponent {
             currTodo = updatedTodo;
           }
         })
-        this.getRemaining();
-        this.getCompleted();
-        this.calculateRemainingCount();
-        this.changeFilter(this.currentStatus);
+        this.updateRemainingCount();
       }
     })
   }
 
-  private calculateRemainingCount() {
-    this.remainingCount = this.remainingTodos.length;
+  reorder(data) {
+    this.todoService.reorder(data.todoId, data.newOrder).subscribe((response) => {
+      if (response[SUCCESS]) {
+        let todo = this.todos.filter((currentTodo) => currentTodo.id == data.todoId)[0];
+        this.initTodos();
+      } else {
+        alert(response[RESULT]);
+      }
+    })
   }
-
-  private setCurrentTodos(todos: TodoModel[]) {
-    this.currTodos = todos;
+  
+  private updateRemainingCount() {
+    this.todoService.countRemaining().subscribe((count) => this.remainingCount = count);
   }
 
   private get(isCompleted: boolean): TodoModel[] {

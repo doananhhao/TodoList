@@ -2,10 +2,13 @@
     <app-todo-header (addTodo)="add($event)"></app-todo-header>
     <app-todo-list 
         [enableDrag]="enableDrag"
-        [todos]="getCurrentTodos(todos, currentStatus)" 
+        [todos]="getCurrentTodos(currentStatus)" 
         (removeTodo)="remove($event)" 
         (updateTodo)="update($event)"
         (itemReorder)="reorder($event)">
     </app-todo-list>
-    <app-todo-footer [remainingCount]="remainingCount" (changeFilter)="changeFilter($event)"></app-todo-footer>
+    <app-todo-footer [remainingCount]="remainingCount" 
+        [currentStatus]="currentStatus" 
+        (changeFilter)="changeFilter($event)">
+    </app-todo-footer>
 </section>

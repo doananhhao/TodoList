@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { TodoModel } from 'src/models/TodoModel';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { StateTodo } from 'src/constant/StateTodo';
 
 @Injectable({
   providedIn: 'root'
@@ -9,6 +10,9 @@ import { Observable } from 'rxjs';
 export class TodoService {
 
   url: string = 'http://localhost:8090/api/todo';
+  data = {
+    filter: null
+  };
 
   constructor(private http: HttpClient) {
   }
@@ -19,6 +23,33 @@ export class TodoService {
 
   getTodos(): Observable<TodoModel[]> {
     return this.http.get<TodoModel[]>(`${this.url}`);
+  }
+
+  getLocalData(): any {
+    return localStorage.getItem("data");
+  }
+
+  setLocalData() {
+    localStorage.setItem("data", JSON.stringify(this.data));
+  }
+
+  setFilter(status: string) {
+    this.data.filter = status;
+    this.setLocalData();
+  }
+
+  getFilter(): string {
+    const data = JSON.parse(this.getLocalData());
+    if (data == null) {
+      return StateTodo.ALL;
+    }
+    if (data.filter === StateTodo.ACTIVE) {
+      return StateTodo.ACTIVE;
+    } 
+    if (data.filter === StateTodo.COMPLETED) {
+      return StateTodo.COMPLETED;
+    }
+    return StateTodo.ALL;
   }
 
   add(title): Observable<TodoModel> {

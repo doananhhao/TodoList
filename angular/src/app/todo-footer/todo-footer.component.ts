@@ -9,10 +9,10 @@ import { StateTodo } from 'src/constant/StateTodo';
 export class TodoFooterComponent implements OnInit {
 
   @Input() remainingCount: number;
+  @Input() currentStatus: string;
 
   @Output() changeFilter = new EventEmitter();
 
-  currentStatus: string;
   anyStatus: string;
   activeStatus: string;
   completedStatus: string;

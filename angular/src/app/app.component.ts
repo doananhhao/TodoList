@@ -24,7 +24,7 @@ export class AppComponent {
   }
 
   ngOnInit(): void {
-    this.currentStatus = StateTodo.ALL;
+    this.currentStatus = this.todoService.getFilter();
     this.enableDrag = true;
     this.initTodos();
     this.updateRemainingCount();
@@ -33,7 +33,6 @@ export class AppComponent {
   initTodos() {
     this.todoService.getTodos().subscribe((response: any) => {
       this.todos = response["data"];
-      this.todos = this.getCurrentTodos(this.currentStatus);
     })
   }
 
@@ -51,6 +50,7 @@ export class AppComponent {
 
   changeFilter(status: string) {
     this.currentStatus = status;
+    this.todoService.setFilter(status);
   }
 
   getRemaining() {
@@ -98,13 +98,37 @@ export class AppComponent {
     this.todoService.reorder(data.todoId, data.newOrder).subscribe((response) => {
       if (response[SUCCESS]) {
         let todo = this.todos.filter((currentTodo) => currentTodo.id == data.todoId)[0];
-        this.initTodos();
+        let currentIndex = this.todos.indexOf(todo);
+        if (currentIndex < data.newOrder - 1) {
+          this.reorderTodos(currentIndex, data.newOrder - 1);
+        } else if (currentIndex > data.newOrder - 1) {
+          this.reorderTodos(data.newOrder - 1, currentIndex, true);
+        }
+        this.changeTodoIndexInList(todo, data);
       } else {
         alert(response[RESULT]);
       }
     })
   }
-  
+
+  private changeTodoIndexInList(todo: TodoModel, data: any) {
+    this.todos.splice(this.todos.indexOf(todo), 1)[0];
+    todo.order = data.newOrder;
+    this.todos.splice(data.newOrder - 1, 0, todo);
+  }
+
+  private reorderTodos(from: number, to: number, isIncrease?: boolean) {
+    this.todos.forEach((item, index) => {
+      if (index >= from && index <= to) {
+        if (isIncrease) {
+          item.order = item.order + 1;
+        } else {
+          item.order = item.order - 1;
+        }
+      }
+    });
+  }
+
   private updateRemainingCount() {
     this.todoService.countRemaining().subscribe((count) => this.remainingCount = count);
   }

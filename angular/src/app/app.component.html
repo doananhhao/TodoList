@@ -2,7 +2,7 @@
     <app-todo-header (addTodo)="add($event)"></app-todo-header>
     <app-todo-list 
         [enableDrag]="enableDrag"
-        [todos]="getCurrentTodos(currentStatus)" 
+        [todos]="todos" 
         (removeTodo)="remove($event)" 
         (updateTodo)="update($event)"
         (itemReorder)="reorder($event)">

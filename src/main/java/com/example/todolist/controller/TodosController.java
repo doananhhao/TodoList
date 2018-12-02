@@ -3,6 +3,8 @@ package com.example.todolist.controller;
 import com.example.todolist.models.Todo;
 import com.example.todolist.service.TodoService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -22,22 +24,20 @@ public class TodosController {
   private TodoService todoService;
 
   @ResponseBody
-  @RequestMapping(method = RequestMethod.GET, produces = APPLICATION_JSON)
-  public Map getTodos(@RequestParam(name = "status", required = false) String status) {
-    Map<String, List> responseData = new HashMap<>();
-    responseData.put("data", this.todoService.getTodos());
-    return responseData;
+  @GetMapping(produces = APPLICATION_JSON)
+  public ResponseEntity<List<Todo>> getTodos(@RequestParam(name = "status") String status) {
+    return ResponseEntity.ok(this.todoService.getTodos(status));
   }
 
   @ResponseBody
-  @RequestMapping(value = "/count-remaining-todos", method = RequestMethod.GET, produces = APPLICATION_JSON)
-  public int getRemainingCount() {
-    return this.todoService.countRemaining();
+  @GetMapping(value = "/count-remaining-todos", produces = APPLICATION_JSON)
+  public ResponseEntity<Integer> getRemainingCount() {
+    return ResponseEntity.ok(this.todoService.countRemaining());
   }
 
   @ResponseBody
-  @RequestMapping(value = "/add", method = RequestMethod.POST, produces = APPLICATION_JSON)
-  public Map addTodo(@RequestBody Map<String, String> requestParams) {
+  @PostMapping(value = "/add", produces = APPLICATION_JSON)
+  public ResponseEntity addTodo(@RequestBody Map<String, String> requestParams) {
     Map<String, Object> responseData = new HashMap<>();
     Todo todo = new Todo();
     todo.setTitle(requestParams.get("title"));
@@ -45,41 +45,41 @@ public class TodosController {
 
     todo = this.todoService.addTodo(todo);
     if (todo == null) {
-      responseData.put(SUCCESS, false);
-      responseData.put(RESULT, "This todo '" + requestParams.get("title") + "' is already exists");
+      return ResponseEntity.status(HttpStatus.CONFLICT).build();
     } else {
-      responseData.put(SUCCESS, true);
-      responseData.put(RESULT, todo);
+      return ResponseEntity.ok(todo);
     }
-    return responseData;
   }
 
   @ResponseBody
-  @RequestMapping(value = "/{id}/edit", method = RequestMethod.PUT, produces = APPLICATION_JSON)
-  public Todo updateTodo(@PathVariable int id,
+  @PutMapping(value = "/{id}/edit", produces = APPLICATION_JSON)
+  public ResponseEntity updateTodo(@PathVariable int id,
       @RequestBody Todo todo) {
     todo.setId(id);
-    return this.todoService.updateTodo(todo);
+    Todo newTodo = this.todoService.updateTodo(todo);
+    return newTodo != null ? ResponseEntity.ok(newTodo) : ResponseEntity.badRequest().build();
   }
 
   @ResponseBody
-  @RequestMapping(value = "/{id}/delete", method = RequestMethod.DELETE, produces = APPLICATION_JSON)
-  public boolean deleteTodo(@PathVariable int id) {
-    return this.todoService.deleteTodo(id);
+  @DeleteMapping(value = "/{id}/delete", produces = APPLICATION_JSON)
+  public ResponseEntity deleteTodo(@PathVariable int id) {
+    boolean isDeleted = this.todoService.deleteTodo(id);
+    if (!isDeleted) {
+      return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+    }
+    return ResponseEntity.ok().build();
   }
 
   @ResponseBody
-  @RequestMapping(value = "/change-order", method = RequestMethod.PUT, produces = APPLICATION_JSON)
-  public Map setOrderTodos(@RequestBody Map<String, Integer> requestParams) {
+  @PutMapping(value = "/change-order", produces = APPLICATION_JSON)
+  public ResponseEntity setOrderTodos(@RequestBody Map<String, Integer> requestParams) {
     int todoId = requestParams.get("todoId");
     int newOrder = requestParams.get("newOrder");
-    boolean success = this.todoService.changeTodoOrder(todoId, newOrder);
-    Map<String, Object> responseData = new HashMap<>();
-    responseData.put(SUCCESS, success);
+    boolean success = this.todoService.changeOrderTodo(todoId, newOrder);
     if (!success) {
-      responseData.put(RESULT, String.format("Todo may not be exist or has invalid index (index: %d)", newOrder));
+      return ResponseEntity.badRequest().build();
     }
-    return responseData;
+    return ResponseEntity.ok().build();
   }
 
 }

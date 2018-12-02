@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { TodoService } from './services/Todo.service';
 import { TodoModel } from 'src/models/TodoModel';
 import { StateTodo } from 'src/constant/StateTodo';
+import { HttpErrorResponse } from '@angular/common/http';
 
 const SUCCESS = "success";
 const RESULT = "result";
@@ -31,26 +32,20 @@ export class AppComponent {
   }
 
   initTodos() {
-    this.todoService.getTodos().subscribe((response: any) => {
-      this.todos = response["data"];
+    this.todoService.getTodos(this.currentStatus).subscribe((todos: TodoModel[]) => {
+      this.todos = todos;
     })
-  }
-
-  getCurrentTodos(status: string): TodoModel[] {
-    this.currentStatus = status;
-    this.enableDrag = false;
-    if (status === StateTodo.ACTIVE) {
-      return this.getRemaining();
-    } else if (status === StateTodo.COMPLETED) {
-      return this.getCompleted();
-    }
-    this.enableDrag = true;
-    return this.todos;
   }
 
   changeFilter(status: string) {
     this.currentStatus = status;
+    if (status === StateTodo.ALL) {
+      this.enableDrag = true;
+    } else {
+      this.enableDrag = false;
+    }
     this.todoService.setFilter(status);
+    this.initTodos();
   }
 
   getRemaining() {
@@ -62,41 +57,51 @@ export class AppComponent {
   }
 
   add(title: String) {
-    this.todoService.add(title).subscribe((response: any) => {
-      if (response[SUCCESS]) {
+    this.todoService.add(title).subscribe(
+      (response: any) => {
         this.todos.push(response[RESULT]);
         this.updateRemainingCount();
-      } else {
-        alert(response[RESULT]);
-      }
-    })
+      },
+      (error: HttpErrorResponse) => alert(`This title is already exists`)
+    );
   }
 
   remove(todo: TodoModel) {
-    this.todoService.remove(todo.id).subscribe((isDeleted: Boolean) => {
-      if (isDeleted) {
-        this.todos.splice(this.todos.indexOf(todo), 1);
-        this.updateRemainingCount();
+    this.todoService.remove(todo.id).subscribe(
+      (isDeleted: Boolean) => {
+        if (isDeleted) {
+          this.todos.splice(this.todos.indexOf(todo), 1);
+          this.updateRemainingCount();
+        }
+      },
+      (error: HttpErrorResponse) => {
+        alert(`This todo [${todo.title}] is not exists`);
       }
-    });
+    );
   }
 
   update(todo: TodoModel) {
-    this.todoService.update(todo).subscribe((updatedTodo: TodoModel) => {
-      if (updatedTodo !== null) {
-        this.todos.forEach((currTodo) => {
-          if (currTodo.id === updatedTodo.id) {
-            currTodo = updatedTodo;
-          }
-        })
-        this.updateRemainingCount();
+    this.todoService.update(todo).subscribe(
+      (updatedTodo: TodoModel) => {
+        if (updatedTodo !== null) {
+          this.todos.forEach((currTodo) => {
+            if (currTodo.id === updatedTodo.id) {
+              currTodo = updatedTodo;
+            }
+          })
+          this.updateRemainingCount();
+        }
+      },
+      (error: HttpErrorResponse) => {
+        alert(error.message);
+        this.initTodos();
       }
-    })
+    );
   }
 
   reorder(data) {
-    this.todoService.reorder(data.todoId, data.newOrder).subscribe((response) => {
-      if (response[SUCCESS]) {
+    this.todoService.reorder(data.todoId, data.newOrder).subscribe(
+      (response) => {
         let todo = this.todos.filter((currentTodo) => currentTodo.id == data.todoId)[0];
         let currentIndex = this.todos.indexOf(todo);
         if (currentIndex < data.newOrder - 1) {
@@ -105,10 +110,11 @@ export class AppComponent {
           this.reorderTodos(data.newOrder - 1, currentIndex, true);
         }
         this.changeTodoIndexInList(todo, data);
-      } else {
-        alert(response[RESULT]);
+      },
+      (error: HttpErrorResponse) => {
+        alert(`Can not change order of this Todo!`);
       }
-    })
+    );
   }
 
   private changeTodoIndexInList(todo: TodoModel, data: any) {

@@ -1,0 +1,13 @@
+<div class="chart-bar">
+  <div class="chart">
+    <div *ngFor="let data of initData()" [ngClass]="['element', data.style]" [ngStyle]="{'width.%': data.percent}">
+      <span>{{ data.count }}</span>
+    </div>
+  </div>
+  <ul class="note">
+    <li *ngFor="let data of initData()" class="item">
+      <span [ngClass]="['icon', data.style]"></span>
+      <span class="title">{{ data.title | titlecase }} ({{ data.percent }}%)</span>
+    </li>
+  </ul>
+</div>

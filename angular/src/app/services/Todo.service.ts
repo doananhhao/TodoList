@@ -21,6 +21,10 @@ export class TodoService {
     return this.http.get<number>(`${this.url}/count-remaining-todos`);
   }
 
+  countCompleted(): Observable<number> {
+    return this.http.get<number>(`${this.url}/count-completed-todos`);
+  }
+
   getTodos(status: String): Observable<TodoModel[]> {
     const getUrl = `${this.url}?status=${status}`;
     return this.http.get<TodoModel[]>(getUrl);

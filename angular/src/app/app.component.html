@@ -1,4 +1,5 @@
 <section class="todoapp">
+    <app-chart [remainingCount]="remainingCount" [completedCount]="completedCount"></app-chart>
     <app-todo-header (addTodo)="add($event)"></app-todo-header>
     <app-todo-list 
         [enableDrag]="enableDrag"

@@ -76,6 +76,10 @@ public class TodoService {
         return this.todoRepository.countAllByCompleted(false);
     }
 
+    public int countCompleted() {
+      return this.todoRepository.countAllByCompleted(true);
+    }
+
     public boolean changeOrderTodo(int id, int newOrder) {
         if (!isValidOrder(newOrder)) {
             return false;
@@ -90,7 +94,8 @@ public class TodoService {
             todo.setOrder(newOrder);
             this.todoRepository.save(todo);
             return true;
-        } else if (todo != null && !isDifferentOrder(todo, newOrder)) {
+        }
+        if (todo != null && !isDifferentOrder(todo, newOrder)) {
             return true;
         }
         return false;

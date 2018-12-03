@@ -7,6 +7,7 @@ import { TodoItemComponent } from './todo-item/todo-item.component';
 import { TodoHeaderComponent } from './todo-header/todo-header.component';
 import { TodoFooterComponent } from './todo-footer/todo-footer.component';
 import { HttpClientModule } from '@angular/common/http';
+import { ChartComponent } from './chart/chart.component';
 
 @NgModule({
    declarations: [
@@ -14,7 +15,8 @@ import { HttpClientModule } from '@angular/common/http';
       TodoListComponent,
       TodoItemComponent,
       TodoHeaderComponent,
-      TodoFooterComponent
+      TodoFooterComponent,
+      ChartComponent
    ],
    imports: [
       BrowserModule,

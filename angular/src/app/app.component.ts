@@ -4,9 +4,6 @@ import { TodoModel } from 'src/models/TodoModel';
 import { StateTodo } from 'src/constant/StateTodo';
 import { HttpErrorResponse } from '@angular/common/http';
 
-const SUCCESS = "success";
-const RESULT = "result";
-
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
@@ -14,8 +11,8 @@ const RESULT = "result";
 })
 export class AppComponent {
 
-  title = 'todo-list';
   remainingCount: number;
+  completedCount: number;
   todos: TodoModel[];
   currentStatus: string;
 
@@ -28,7 +25,7 @@ export class AppComponent {
     this.currentStatus = this.todoService.getFilter();
     this.enableDrag = true;
     this.initTodos();
-    this.updateRemainingCount();
+    this.updateCount();
   }
 
   initTodos() {
@@ -58,9 +55,9 @@ export class AppComponent {
 
   add(title: String) {
     this.todoService.add(title).subscribe(
-      (response: any) => {
-        this.todos.push(response[RESULT]);
-        this.updateRemainingCount();
+      (todo: any) => {
+        this.todos.push(todo);
+        this.updateCount();
       },
       (error: HttpErrorResponse) => alert(`This title is already exists`)
     );
@@ -68,11 +65,9 @@ export class AppComponent {
 
   remove(todo: TodoModel) {
     this.todoService.remove(todo.id).subscribe(
-      (isDeleted: Boolean) => {
-        if (isDeleted) {
-          this.todos.splice(this.todos.indexOf(todo), 1);
-          this.updateRemainingCount();
-        }
+      () => {
+        this.todos.splice(this.todos.indexOf(todo), 1);
+        this.updateCount();
       },
       (error: HttpErrorResponse) => {
         alert(`This todo [${todo.title}] is not exists`);
@@ -89,7 +84,7 @@ export class AppComponent {
               currTodo = updatedTodo;
             }
           })
-          this.updateRemainingCount();
+          this.updateCount();
         }
       },
       (error: HttpErrorResponse) => {
@@ -135,8 +130,9 @@ export class AppComponent {
     });
   }
 
-  private updateRemainingCount() {
+  private updateCount() {
     this.todoService.countRemaining().subscribe((count) => this.remainingCount = count);
+    this.todoService.countCompleted().subscribe((count) => this.completedCount = count);
   }
 
   private get(isCompleted: boolean): TodoModel[] {

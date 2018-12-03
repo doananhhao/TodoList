@@ -1,7 +1,10 @@
 package com.example.todolist.controller;
 
+import com.example.todolist.dto.ChangeOrderDto;
+import com.example.todolist.dto.TodoDto;
 import com.example.todolist.models.Todo;
 import com.example.todolist.service.TodoService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -11,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 
 @CrossOrigin
+@RequiredArgsConstructor
 @RestController
 @RequestMapping(value = "api/todo")
 public class TodosController {
@@ -40,11 +44,8 @@ public class TodosController {
 
   @ResponseBody
   @PostMapping(value = "/add", produces = APPLICATION_JSON)
-  public ResponseEntity addTodo(@RequestBody Map<String, String> requestParams) {
-    Todo todo = new Todo();
-    todo.setTitle(requestParams.get("title"));
-    todo.setCompleted(false);
-    todo = this.todoService.addTodo(todo);
+  public ResponseEntity addTodo(@RequestBody TodoDto todoDto) {
+    Todo todo = this.todoService.addTodo(todoDto);
     if (todo == null) {
       return ResponseEntity.status(HttpStatus.CONFLICT).build();
     } else {
@@ -53,11 +54,9 @@ public class TodosController {
   }
 
   @ResponseBody
-  @PutMapping(value = "/{id}/edit", produces = APPLICATION_JSON)
-  public ResponseEntity updateTodo(@PathVariable int id,
-      @RequestBody Todo todo) {
-    todo.setId(id);
-    Todo newTodo = this.todoService.updateTodo(todo);
+  @PutMapping(value = "/edit", produces = APPLICATION_JSON)
+  public ResponseEntity updateTodo(@RequestBody TodoDto todoDto) {
+    Todo newTodo = this.todoService.updateTodo(todoDto);
     return newTodo != null ? ResponseEntity.ok(newTodo) : ResponseEntity.badRequest().build();
   }
 
@@ -73,10 +72,8 @@ public class TodosController {
 
   @ResponseBody
   @PutMapping(value = "/change-order", produces = APPLICATION_JSON)
-  public ResponseEntity setOrderTodos(@RequestBody Map<String, Integer> requestParams) {
-    int todoId = requestParams.get("todoId");
-    int newOrder = requestParams.get("newOrder");
-    boolean success = this.todoService.changeOrderTodo(todoId, newOrder);
+  public ResponseEntity setOrderTodos(@RequestBody ChangeOrderDto changeOrderDto) {
+    boolean success = this.todoService.changeOrderTodo(changeOrderDto);
     if (!success) {
       return ResponseEntity.badRequest().build();
     }

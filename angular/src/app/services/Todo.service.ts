@@ -71,7 +71,7 @@ export class TodoService {
   }
 
   update(todo: TodoModel): Observable<TodoModel> {
-    const updateUrl = `${this.url}/${todo.id}/edit`;
+    const updateUrl = `${this.url}/edit`;
     return this.http.put<TodoModel>(updateUrl, todo);
   }
 

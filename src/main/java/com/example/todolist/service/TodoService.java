@@ -1,13 +1,17 @@
 package com.example.todolist.service;
 
 import com.example.todolist.dto.ChangeOrderDto;
+import com.example.todolist.dto.StatisticDto;
 import com.example.todolist.dto.TodoDto;
 import com.example.todolist.mapper.TodoMapper;
+import com.example.todolist.models.Statistic;
 import com.example.todolist.models.Todo;
 import com.example.todolist.repository.TodoRepository;
+import com.example.todolist.util.Calculator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -48,6 +52,9 @@ public class TodoService {
     if (this.todoRepository.findById(todo.getId()) == null) {
       return null;
     }
+    if (this.todoRepository.findByTitleAndIdNot(todo.getTitle(), todo.getId()) != null) {
+      return null;
+    }
     return this.todoRepository.save(todo);
   }
 
@@ -81,12 +88,25 @@ public class TodoService {
         });
   }
 
-  public int countRemaining() {
-    return this.todoRepository.countAllByCompleted(false);
+  public StatisticDto getStatistics() {
+    int total = this.todoRepository.countAllByTitleIsNotNull();
+    if (total != 0) {
+      return StatisticDto.builder().remaining(this.remainingStatistic(total))
+          .completed(this.completedStatistic(total)).build();
+    }
+    return null;
   }
 
-  public int countCompleted() {
-    return this.todoRepository.countAllByCompleted(true);
+  private Statistic remainingStatistic(int total) {
+    int count = this.todoRepository.countAllByCompleted(false);
+    int percent = Calculator.calculatePercentage(count, total);
+    return new Statistic("remaining", count, percent);
+  }
+
+  private Statistic completedStatistic(int total) {
+    int count = this.todoRepository.countAllByCompleted(true);
+    int percent = Calculator.calculatePercentage(count, total);
+    return new Statistic("completed", count, percent);
   }
 
   public boolean changeOrderTodo(ChangeOrderDto changeOrderDto) {

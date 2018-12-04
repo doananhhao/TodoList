@@ -11,8 +11,9 @@ import { HttpErrorResponse } from '@angular/common/http';
 })
 export class AppComponent {
 
-  remainingCount: number;
-  completedCount: number;
+  statistics = {
+    remaining: 0
+  };
   todos: TodoModel[];
   currentStatus: string;
 
@@ -29,9 +30,8 @@ export class AppComponent {
   }
 
   initTodos() {
-    this.todoService.getTodos(this.currentStatus).subscribe((todos: TodoModel[]) => {
-      this.todos = todos;
-    })
+    this.todoService.getTodos(this.currentStatus).toPromise()
+      .then((todos) => this.todos = todos);
   }
 
   changeFilter(status: string) {
@@ -54,85 +54,49 @@ export class AppComponent {
   }
 
   add(title: String) {
-    this.todoService.add(title).subscribe(
-      (todo: any) => {
-        this.todos.push(todo);
+    this.todoService.add(title).toPromise()
+      .then((todo) => {
         this.updateCount();
-      },
-      (error: HttpErrorResponse) => alert(`This title is already exists`)
-    );
+        this.initTodos();
+      }).catch((error: HttpErrorResponse) => alert(`This title is already exists`));
   }
 
   remove(todo: TodoModel) {
-    this.todoService.remove(todo.id).subscribe(
-      () => {
-        this.todos.splice(this.todos.indexOf(todo), 1);
+    this.todoService.remove(todo.id).toPromise()
+      .then((todo) => {
         this.updateCount();
-      },
-      (error: HttpErrorResponse) => {
-        alert(`This todo [${todo.title}] is not exists`);
-      }
-    );
+        this.initTodos();
+      }).catch((error: HttpErrorResponse) => alert(`This todo [${todo.title}] is not exists`));
   }
 
   update(todo: TodoModel) {
-    this.todoService.update(todo).subscribe(
-      (updatedTodo: TodoModel) => {
-        if (updatedTodo !== null) {
-          this.todos.forEach((currTodo) => {
-            if (currTodo.id === updatedTodo.id) {
-              currTodo = updatedTodo;
-            }
-          })
-          this.updateCount();
-        }
-      },
-      (error: HttpErrorResponse) => {
-        alert(error.message);
+    this.todoService.update(todo).toPromise()
+      .then((updatedTodo) => {
+        this.updateCount();
         this.initTodos();
-      }
-    );
+      })
+      .catch((error: HttpErrorResponse) => {
+        this.initTodos();
+        alert(`This title is already exists`);
+      });
   }
 
   reorder(data) {
-    this.todoService.reorder(data.todoId, data.newOrder).subscribe(
-      (response) => {
-        let todo = this.todos.filter((currentTodo) => currentTodo.id == data.todoId)[0];
-        let currentIndex = this.todos.indexOf(todo);
-        if (currentIndex < data.newOrder - 1) {
-          this.reorderTodos(currentIndex, data.newOrder - 1);
-        } else if (currentIndex > data.newOrder - 1) {
-          this.reorderTodos(data.newOrder - 1, currentIndex, true);
-        }
-        this.changeTodoIndexInList(todo, data);
-      },
-      (error: HttpErrorResponse) => {
+    this.todoService.reorder(data.todoId, data.newOrder).toPromise()
+      .then((response) => {
+        this.initTodos();
+      })
+      .catch((error: HttpErrorResponse) => {
         alert(`Can not change order of this Todo!`);
-      }
-    );
-  }
-
-  private changeTodoIndexInList(todo: TodoModel, data: any) {
-    this.todos.splice(this.todos.indexOf(todo), 1)[0];
-    todo.order = data.newOrder;
-    this.todos.splice(data.newOrder - 1, 0, todo);
-  }
-
-  private reorderTodos(from: number, to: number, isIncrease?: boolean) {
-    this.todos.forEach((item, index) => {
-      if (index >= from && index <= to) {
-        if (isIncrease) {
-          item.order = item.order + 1;
-        } else {
-          item.order = item.order - 1;
-        }
-      }
-    });
+      });
   }
 
   private updateCount() {
-    this.todoService.countRemaining().subscribe((count) => this.remainingCount = count);
-    this.todoService.countCompleted().subscribe((count) => this.completedCount = count);
+    this.todoService.getStatistics().subscribe(
+      (data) => {
+        this.statistics = data;
+      }
+    );
   }
 
   private get(isCompleted: boolean): TodoModel[] {

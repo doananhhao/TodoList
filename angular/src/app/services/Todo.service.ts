@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { TodoModel } from 'src/models/TodoModel';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
 import { StateTodo } from 'src/constant/StateTodo';
+import { Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -17,12 +17,8 @@ export class TodoService {
   constructor(private http: HttpClient) {
   }
 
-  countRemaining(): Observable<number> {
-    return this.http.get<number>(`${this.url}/count-remaining-todos`);
-  }
-
-  countCompleted(): Observable<number> {
-    return this.http.get<number>(`${this.url}/count-completed-todos`);
+  getStatistics(): Observable<any> {
+    return this.http.get<any>(`${this.url}/statistics`);
   }
 
   getTodos(status: String): Observable<TodoModel[]> {

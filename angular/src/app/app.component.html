@@ -1,5 +1,5 @@
 <section class="todoapp">
-    <app-chart [remainingCount]="remainingCount" [completedCount]="completedCount"></app-chart>
+    <app-chart [statistics]="statistics"></app-chart>
     <app-todo-header (addTodo)="add($event)"></app-todo-header>
     <app-todo-list 
         [enableDrag]="enableDrag"
@@ -8,7 +8,7 @@
         (updateTodo)="update($event)"
         (itemReorder)="reorder($event)">
     </app-todo-list>
-    <app-todo-footer [remainingCount]="remainingCount" 
+    <app-todo-footer [remainingCount]="statistics.remaining.count" 
         [currentStatus]="currentStatus" 
         (changeFilter)="changeFilter($event)">
     </app-todo-footer>

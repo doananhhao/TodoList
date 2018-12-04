@@ -1,6 +1,7 @@
 package com.example.todolist.controller;
 
 import com.example.todolist.dto.ChangeOrderDto;
+import com.example.todolist.dto.StatisticDto;
 import com.example.todolist.dto.TodoDto;
 import com.example.todolist.models.Todo;
 import com.example.todolist.service.TodoService;
@@ -27,18 +28,6 @@ public class TodosController {
   @GetMapping(produces = APPLICATION_JSON)
   public ResponseEntity<List<Todo>> getTodos(@RequestParam(name = "status") String status) {
     return ResponseEntity.ok(this.todoService.getTodos(status));
-  }
-
-  @ResponseBody
-  @GetMapping(value = "/count-remaining-todos", produces = APPLICATION_JSON)
-  public ResponseEntity<Integer> getRemainingCount() {
-    return ResponseEntity.ok(this.todoService.countRemaining());
-  }
-
-  @ResponseBody
-  @GetMapping(value = "/count-completed-todos", produces = APPLICATION_JSON)
-  public ResponseEntity<Integer> getCompletedCount() {
-    return ResponseEntity.ok(this.todoService.countCompleted());
   }
 
   @ResponseBody
@@ -77,6 +66,16 @@ public class TodosController {
       return ResponseEntity.badRequest().build();
     }
     return ResponseEntity.ok().build();
+  }
+
+  @ResponseBody
+  @GetMapping(value = "/statistics", produces = APPLICATION_JSON)
+  public ResponseEntity<StatisticDto> getStatistics() {
+    StatisticDto statisticDto = this.todoService.getStatistics();
+    if (statisticDto != null) {
+      return ResponseEntity.ok(statisticDto);
+    }
+    return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
   }
 
 }

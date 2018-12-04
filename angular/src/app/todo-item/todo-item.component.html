@@ -6,7 +6,7 @@
   (dragover)="onDragOver($event)">
   <div class="view">
       <input class="toggle" type="checkbox" (click)="toggleCompletion()" [checked]="todo.completed">
-      <label (dblclick)="edit(todo)" (click)="toggleCompletion()">{{ todo.title }}</label>
+      <label (dblclick)="edit()">{{ todo.title }}</label>
       <button class="destroy" (click)="remove()"></button>
   </div>
   <input class="edit" *ngIf="editing" [value]="todo.title" #editedtodo (blur)="stopEditing(editedtodo)" (keyup.enter)="stopEditing(editedtodo)" (keyup.escape)="cancelEditing()">

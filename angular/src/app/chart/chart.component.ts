@@ -14,37 +14,22 @@ const listStyle: String[] = [
 })
 export class ChartComponent implements OnInit {
 
-  @Input() remainingCount: number;
-  @Input() completedCount: number;
+  @Input() statistics: any;
 
   constructor() { }
 
   ngOnInit() {
   }
 
-  getInputs() {
-    return {
-      completedCount: this.completedCount,
-      remainingCount: this.remainingCount,
-    }
-  }
-
   initData(): ChartData[] {
     let chartDatas: ChartData[] = this.getData();
-    chartDatas = this.setStyle(chartDatas);
-    return this.calculatePercentage(chartDatas);
+    return this.setStyle(chartDatas);
   }
 
   private setStyle(chartDatas: ChartData[]): ChartData[] {
     chartDatas.forEach((data, index) => {
       data.style = listStyle[index];
     });
-    return chartDatas;
-  }
-
-  private calculatePercentage(chartDatas: ChartData[]): ChartData[] {
-    let total: number = this.getTotal(chartDatas);
-    chartDatas.forEach((data) => data.percent = this.getPercent(data.count, total));
     return chartDatas;
   }
 
@@ -55,12 +40,12 @@ export class ChartComponent implements OnInit {
   }
 
   private getData() {
-    let preparedData = this.getInputs();
     let chartDatas: ChartData[] = [];
-    for (let prop in preparedData) {
+    for (let prop in this.statistics) {
       let chartData = new ChartData;
       chartData.title = this.getTitle(prop);
-      chartData.count = preparedData[prop];
+      chartData.count = this.statistics[prop].count;
+      chartData.percent = this.statistics[prop].percent;
       if (chartData.count > 0) {
         chartDatas.push(chartData);
       }

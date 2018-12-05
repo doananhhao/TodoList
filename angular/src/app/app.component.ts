@@ -12,7 +12,9 @@ import { HttpErrorResponse } from '@angular/common/http';
 export class AppComponent {
 
   statistics = {
-    remaining: 0
+    remaining: {
+      count: 0
+    }
   };
   todos: TodoModel[];
   currentStatus: string;
@@ -92,11 +94,15 @@ export class AppComponent {
   }
 
   private updateCount() {
-    this.todoService.getStatistics().subscribe(
-      (data) => {
-        this.statistics = data;
-      }
-    );
+    this.todoService.getStatistics().toPromise()
+      .then((data) => this.statistics = data)
+      .catch((error) => {
+        this.statistics = {
+          remaining: {
+            count: 0
+          }
+        }
+      });
   }
 
   private get(isCompleted: boolean): TodoModel[] {

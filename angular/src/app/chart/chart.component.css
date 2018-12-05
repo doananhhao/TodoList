@@ -18,7 +18,7 @@
     margin: auto;
 }
 
-.chart .element {
+.chart > .element {
     border-right: 2px solid #fff;
     margin-right: 2px;
     font-size: 9px;
@@ -26,6 +26,7 @@
     padding: 5px 0;
     text-align: center;
     display: table-cell;
+    overflow: visible;
 }
 
 .element:first-child {
@@ -64,6 +65,49 @@
     border-radius: 2px;
     margin-right: 4px;
     border: 1px solid #d8dfe6;
+}
+
+.popup_chart {
+    position: absolute;
+    padding: 10px;
+    border-radius: 0;
+    margin-top: 5px;
+    z-index: 2;
+    max-width: 276px;
+    display: block;
+    letter-spacing: normal;
+    line-break: auto;
+    line-height: 1.42857143;
+    text-align: start;
+    text-decoration: none;
+    text-shadow: none;
+    text-transform: none;
+    white-space: normal;
+    word-break: normal;
+    word-spacing: normal;
+    word-wrap: normal;
+    font-size: 12px;
+    background-color: #fff;
+    background-clip: padding-box;
+    border: 1px solid #ccc;
+    border: 1px solid rgba(0,0,0,.2);
+    border-radius: 6px;
+    box-shadow: 0 5px 10px rgba(0,0,0,.2);
+
+	opacity: 1;
+	animation-name: fadeInOpacity;
+	animation-iteration-count: 1;
+	animation-timing-function: ease-in;
+	animation-duration: 0.2s;
+}
+
+@keyframes fadeInOpacity {
+	0% {
+		opacity: 0;
+	}
+	100% {
+		opacity: 1;
+	}
 }
 
 /*

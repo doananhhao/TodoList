@@ -24,10 +24,10 @@ public class TodoService {
   private TodoRepository todoRepository;
 
   public List<Todo> getTodos(String status) {
-    if (status.equalsIgnoreCase("completed")) {
+    if ("completed".equalsIgnoreCase(status)) {
       return this.todoRepository.findAllByCompletedOrderByOrderAsc(true);
     }
-    if (status.equalsIgnoreCase("active")) {
+    if ("active".equalsIgnoreCase(status)) {
       return this.todoRepository.findAllByCompletedOrderByOrderAsc(false);
     }
     return this.todoRepository.findAllByOrderByOrderAsc();
@@ -36,7 +36,7 @@ public class TodoService {
   public Todo addTodo(TodoDto todoDto) {
     Todo todo = todoMapper.todoDtoToTodo(todoDto);
     todo.setCompleted(false);
-    if (todo.getTitle().equalsIgnoreCase("")) {
+    if ("".equalsIgnoreCase(todo.getTitle())) {
       return null;
     }
     if (this.todoRepository.findByTitle(todo.getTitle()) != null) {

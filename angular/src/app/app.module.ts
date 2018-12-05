@@ -16,7 +16,7 @@ import { ChartComponent } from './chart/chart.component';
       TodoItemComponent,
       TodoHeaderComponent,
       TodoFooterComponent,
-      ChartComponent
+      ChartComponent,
    ],
    imports: [
       BrowserModule,

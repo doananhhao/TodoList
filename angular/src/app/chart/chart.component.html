@@ -1,6 +1,6 @@
 <div id="chartTodos" class="chart-bar" *ngIf="checkStatistisc()">
   <div class="chart">
-    <div *ngFor="let data of initData()" 
+    <div *ngFor="let data of getData()"
       [ngClass]="['element', data.style]"
       [ngStyle]="{'width.%': data.percent}"
       (mouseover)="onMouseOver($event, data)">
@@ -8,7 +8,7 @@
     </div>
   </div>
   <ul class="note">
-    <li *ngFor="let data of initData()" class="item">
+    <li *ngFor="let data of getData()" class="item">
       <span [ngClass]="['icon', data.style]"></span>
       <span class="title">{{ data.title | titlecase }}</span>
     </li>

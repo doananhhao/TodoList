@@ -4,11 +4,24 @@ public class Statistic {
   String name;
   int count;
   int percent;
+  String style;
 
-  public Statistic(String name, int count, int percent) {
+  public Statistic(String name, int count, int percent, String style) {
     this.name = name;
     this.count = count;
     this.percent = percent;
+    this.style = style;
+  }
+
+  public Statistic() {
+  }
+
+  public String getStyle() {
+    return style;
+  }
+
+  public void setStyle(String style) {
+    this.style = style;
   }
 
   public String getName() {
@@ -35,6 +48,4 @@ public class Statistic {
     this.percent = percent;
   }
 
-  public Statistic() {
-  }
 }

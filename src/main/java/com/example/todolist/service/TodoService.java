@@ -11,7 +11,6 @@ import com.example.todolist.util.Calculator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -100,13 +99,13 @@ public class TodoService {
   private Statistic remainingStatistic(int total) {
     int count = this.todoRepository.countAllByCompleted(false);
     int percent = Calculator.calculatePercentage(count, total);
-    return new Statistic("remaining", count, percent);
+    return new Statistic("remaining", count, percent, "background-color-red");
   }
 
   private Statistic completedStatistic(int total) {
     int count = this.todoRepository.countAllByCompleted(true);
     int percent = Calculator.calculatePercentage(count, total);
-    return new Statistic("completed", count, percent);
+    return new Statistic("completed", count, percent, "background-color-green");
   }
 
   public boolean changeOrderTodo(ChangeOrderDto changeOrderDto) {

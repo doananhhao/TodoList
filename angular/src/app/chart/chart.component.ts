@@ -1,12 +1,6 @@
 import { Component, OnInit, Input, HostListener } from '@angular/core';
 import { ChartData } from 'src/models/ChartData';
 
-const listStyle: String[] = [
-  'background-color-green',
-  'background-color-yellow',
-  'background-color-red'
-];
-
 @Component({
   selector: 'app-chart',
   templateUrl: './chart.component.html',
@@ -35,25 +29,14 @@ export class ChartComponent implements OnInit {
     return false;
   }
 
-  initData(): ChartData[] {
-    let chartDatas: ChartData[] = this.getData();
-    return this.setStyle(chartDatas);
-  }
-
-  private setStyle(chartDatas: ChartData[]): ChartData[] {
-    chartDatas.forEach((data, index) => {
-      data.style = listStyle[index];
-    });
-    return chartDatas;
-  }
-
-  private getData() {
+  getData(): ChartData[] {
     let chartDatas: ChartData[] = [];
     for (let prop in this.statistics) {
       let chartData = new ChartData;
       chartData.title = this.getTitle(prop);
       chartData.count = this.statistics[prop].count;
       chartData.percent = this.statistics[prop].percent;
+      chartData.style = this.statistics[prop].style;
       if (chartData.count > 0) {
         chartDatas.push(chartData);
       }

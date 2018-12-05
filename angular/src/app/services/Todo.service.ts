@@ -9,7 +9,7 @@ import { Observable } from 'rxjs';
 })
 export class TodoService {
 
-  url: string = 'https://itodos1.herokuapp.com/api/todo';
+  url: string = '/api/todo';
   data = {
     filter: null
   };
